@@ -3,6 +3,9 @@ apply plugin: 'android-apt'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group = 'com.github.dkajiwara'
+def versionMajor = 0
+def versionMinor = 0
+def versionPatch = 2
 
 android {
     compileSdkVersion 23
@@ -11,8 +14,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 1
-        versionName "0.0.1"
+        versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
