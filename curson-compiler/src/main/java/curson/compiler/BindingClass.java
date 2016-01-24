@@ -19,10 +19,10 @@ import javax.lang.model.element.Modifier;
 import curson.CursorBinder;
 
 public class BindingClass {
-    String classPackage;
-    String className;
-    String targetType;
-    Set<FiledBinding> mBindingSet = new HashSet<>();
+    private String classPackage;
+    private String className;
+    private String targetType;
+    private Set<FiledBinding> bindingSet = new HashSet<>();
 
     public BindingClass(String classPackage, String className, String targetType) {
         this.classPackage = classPackage;
@@ -51,12 +51,12 @@ public class BindingClass {
 
     private MethodSpec crateBindMethod() {
         StringBuilder code = new StringBuilder();
-        for (FiledBinding binding : mBindingSet) {
+        for (FiledBinding binding : bindingSet) {
             code.append("final int " + binding.getName() + "Index" + " = cursor.getColumnIndex(\"" + binding.getValue() + "\");\n");
         }
         String clazzfiledName = className.toLowerCase();
         code.append(className + " " + clazzfiledName + " = new " + className + "();\n");
-        for (FiledBinding binding : mBindingSet) {
+        for (FiledBinding binding : bindingSet) {
             code.append(clazzfiledName + "." + binding.getName() +
                     " = cursor." + binding.getCursorValueMethod() + "("    + binding.getName() + "Index);\n");
         }
@@ -78,19 +78,19 @@ public class BindingClass {
                 ParameterizedTypeName.get(ClassName.get(List.class), ClassName.get(classPackage, className)), "bindList").build();
 
         StringBuilder code = new StringBuilder();
-        for (FiledBinding binding : mBindingSet) {
+        for (FiledBinding binding : bindingSet) {
             code.append("final int " + binding.getName() + "Index" + " = cursor.getColumnIndex(\"" + binding.getValue() + "\");\n");
         }
-        code.append("while($N.moveToNext()) { \n");
+        code.append("do {\n");
         String classfiledName = className.toLowerCase();
         code.append("    " + className + " " + classfiledName + " = new " + className + "();\n");
 
-        for (FiledBinding binding : mBindingSet) {
+        for (FiledBinding binding : bindingSet) {
             code.append("    " + classfiledName + "." + binding.getName() +
                     " = cursor." + binding.getCursorValueMethod() + "("    + binding.getName() + "Index);\n");
         }
         code.append("    " + "$N.add(" + classfiledName + ");\n");
-        code.append("}\n");
+        code.append("} while($N.moveToNext()); \n");
         code.append("return $N;\n");
 
         ParameterizedTypeName parameterizedTypeName =
@@ -100,12 +100,12 @@ public class BindingClass {
                 .addParameter(param)
                 .addParameter(param2)
                 .addAnnotation(Override.class)
-                .addCode(code.toString(), param, param2, param2)
+                .addCode(code.toString(), param2, param, param2)
                 .returns(parameterizedTypeName)
                 .build();
     }
 
     public void addFieldCollection(FiledBinding binding) {
-        mBindingSet.add(binding);
+        bindingSet.add(binding);
     }
 }

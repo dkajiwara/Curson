@@ -8,9 +8,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * Curson.
  */
 public class Curson {
+    private static final boolean DEBUG = false;
+    private static final String ENTITY_BINDER_PREFIX = "$$CursonEntityBinder";
     private static final Map<Class<?>, CursorBinder<?>> BINDERS = new LinkedHashMap<>();
 
     /**
@@ -81,15 +83,21 @@ public class Curson {
             return cursorBinder;
         }
         try {
-            Class<?> bindingClass = Class.forName(entity.getName() + "$$CursonEntityBinder");
+            Class<?> bindingClass = Class.forName(entity.getName() + ENTITY_BINDER_PREFIX);
             //noinspection unchecked
             cursorBinder = (CursorBinder<T>) bindingClass.newInstance();
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            if (DEBUG) {
+                e.printStackTrace();
+            }
         } catch (InstantiationException e) {
-            e.printStackTrace();
+            if (DEBUG) {
+                e.printStackTrace();
+            }
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            if (DEBUG) {
+                e.printStackTrace();
+            }
         }
         BINDERS.put(entity, cursorBinder);
         return cursorBinder;
