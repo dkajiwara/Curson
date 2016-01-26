@@ -41,7 +41,7 @@ public class Curson {
     }
 
     public static <T> T bind(Cursor cursor, Class<T> entity, int position) {
-        return bind(cursor, entity, position);
+        return bind(cursor, entity, position, true);
     }
 
     public static <T> T bind(Cursor cursor, Class<T> entity, int position, boolean autoClose) {
