@@ -63,7 +63,7 @@ public class Curson {
     }
 
     private static <T> List<T> bindAll(Cursor cursor, Class<T> entity, boolean autoClose) {
-        if (cursor == null) {
+        if (cursor == null || !cursor.moveToPosition(0)) {
             return new ArrayList<>();
         }
         CursorBinder<T> binder = findCursorForClass(entity);
