@@ -50,8 +50,8 @@ allprojects {
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
-    compile 'com.github.dkajiwara.Curson:curson:v0.0.3'
-    apt 'com.github.dkajiwara.Curson:curson-compiler:v0.0.3'
+    compile 'com.github.dkajiwara.Curson:curson:v0.0.4'
+    apt 'com.github.dkajiwara.Curson:curson-compiler:v0.0.4'
 }
 ```
 
