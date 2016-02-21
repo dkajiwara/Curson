@@ -44,7 +44,7 @@ publish {
     userOrg = 'dkajiwara'
     groupId = 'com.github.dkajiwara'
     artifactId = 'curson'
-    publishVersion = "0.1.1"
+    publishVersion = rootProject.ext.publishVersion
     desc = 'Cursor binding which uses annotation processing to generate boilerplate code for you.'
     website = 'https://github.com/dkajiwara/Curson'
     licences = ['MIT']

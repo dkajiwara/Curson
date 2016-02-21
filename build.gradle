@@ -21,7 +21,19 @@ allprojects {
 }
 
 ext {
+    versionFile = project.file("version.properties")
 
+    versionName = {
+        def versionProps = getVersionProps()
+        "${versionProps['major']}.${versionProps['minor']}.${versionProps['patch']}"
+    }
+    publishVersion = versionName()
+}
+
+def Properties getVersionProps() {
+    def Properties versionProps = new Properties()
+    versionProps.load(new FileInputStream(versionFile))
+    return versionProps
 }
 
 task clean(type: Delete) {
