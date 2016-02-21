@@ -1,13 +1,21 @@
 apply plugin: 'com.android.library'
 apply plugin: 'android-apt'
 apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.novoda.bintray-release'
 
 group = 'com.github.dkajiwara'
+
+def isCi = "true".equals(System.getenv("CI"))
+def preDexEnabled = "true".equals(System.getProperty("pre-dex", "true"))
 
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.1"
 
+    dexOptions {
+        // Skip pre-dexing when running on CI or when disabled via -Dpre-dex=false.
+        preDexLibraries = preDexEnabled && !isCi
+    }
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 23
@@ -30,4 +38,14 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
+}
+
+publish {
+    userOrg = 'dkajiwara'
+    groupId = 'com.github.dkajiwara'
+    artifactId = 'curson'
+    publishVersion = "0.1.1"
+    desc = 'Cursor binding which uses annotation processing to generate boilerplate code for you.'
+    website = 'https://github.com/dkajiwara/Curson'
+    licences = ['MIT']
 }

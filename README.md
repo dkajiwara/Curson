@@ -1,5 +1,6 @@
 Curson
 ======
+[![Circle CI](https://circleci.com/gh/dkajiwara/Curson.svg?style=svg)](https://circleci.com/gh/dkajiwara/Curson)
 
 Cursor binding which uses annotation processing to generate boilerplate code for you.  
 
