@@ -32,7 +32,7 @@ public List<Item> getItems() {
     Cursor cursor = context.getContentResolver().query(
             ExContentProvider.Contract.MEMO_URI,
             null, null, null, null);
-    return Curson.fromCursor(cursor, Item.class);
+    return Curson.fromCursorAll(cursor, Item.class);
 }
 ```
 
