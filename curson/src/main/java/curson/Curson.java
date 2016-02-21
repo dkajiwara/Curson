@@ -17,15 +17,18 @@ public class Curson {
 
     /**
      * Bind annotated field in the specified {@link T}.<br>
-     * And, cursor will be closed automatically.<br>
-     * if you need not automatically closed cursor, use {@link Curson#bind(Cursor, Class, boolean)} method.
+     * And, cursor will be not closed automatically.<br>
+     * if you need not automatically closed cursor, use {@link Curson#fromCursor(Cursor, Class, boolean)} method.
      *
      * @param cursor target
      * @param entity entity class for cursor binding.
-     * @param <T>
+     * @param <T> entity class
+     *
+     * @throws IllegalArgumentException when cursor is null.
+     * @throws IndexOutOfBoundsException requested move cursor failed.
      */
-    public static <T> T bind(Cursor cursor, Class<T> entity) {
-        return bind(cursor, entity, true);
+    public static <T> T fromCursor(Cursor cursor, Class<T> entity) {
+        return fromCursor(cursor, entity, false);
     }
 
     /**
@@ -33,21 +36,26 @@ public class Curson {
      *
      * @param cursor target
      * @param entity entity class for cursor binding.
-     * @param autoClose if true, cursor is closed.
-     * @param <T>
+     * @param autoClose if true, cursor closed automatically.
+     * @param <T> entity class
      */
-    public static <T> T bind(Cursor cursor, Class<T> entity, boolean autoClose) {
-        return bind(cursor, entity, 0, autoClose);
+    public static <T> T fromCursor(Cursor cursor, Class<T> entity, boolean autoClose) {
+        return fromCursor(cursor, entity, 0, autoClose);
     }
 
-    public static <T> T bind(Cursor cursor, Class<T> entity, int position) {
-        return bind(cursor, entity, position, true);
+    public static <T> T fromCursor(Cursor cursor, Class<T> entity, int position) {
+        return fromCursor(cursor, entity, position, false);
     }
 
-    public static <T> T bind(Cursor cursor, Class<T> entity, int position, boolean autoClose) {
-        if (cursor == null || !cursor.moveToPosition(position)) {
-            return null;
+    public static <T> T fromCursor(Cursor cursor, Class<T> entity, int position, boolean autoClose) {
+        if (cursor == null) {
+            throw new IllegalArgumentException("cursor is null.");
         }
+
+        if (!cursor.moveToPosition(position)) {
+            throw new IndexOutOfBoundsException("Can't move the cursor to an absolute position(" + position+ ")");
+        }
+
         CursorBinder<T> binder = findCursorForClass(entity);
         try {
             return binder.bind(cursor);
@@ -58,16 +66,21 @@ public class Curson {
         }
     }
 
-    public static <T> List<T> bindAll(Cursor cursor, Class<T> entity) {
-        return bindAll(cursor, entity, true);
+    public static <T> List<T> fromCursorAll(Cursor cursor, Class<T> entity) {
+        return fromCursorAll(cursor, entity, false);
     }
 
-    private static <T> List<T> bindAll(Cursor cursor, Class<T> entity, boolean autoClose) {
+    private static <T> List<T> fromCursorAll(Cursor cursor, Class<T> entity, boolean autoClose) {
         if (cursor == null || !cursor.moveToPosition(0)) {
+            throw new IllegalArgumentException("cursor is null.");
+        }
+
+        if (!cursor.moveToPosition(0)) {
             return new ArrayList<>();
         }
-        CursorBinder<T> binder = findCursorForClass(entity);
+
         List<T> list = new ArrayList<>();
+        CursorBinder<T> binder = findCursorForClass(entity);
         try {
             return binder.bind(cursor, list);
         } finally {
@@ -78,6 +91,7 @@ public class Curson {
     }
 
     private static <T> CursorBinder<T> findCursorForClass(Class<T> entity) {
+        //noinspection unchecked
         CursorBinder<T> cursorBinder = (CursorBinder<T>) BINDERS.get(entity);
         if (cursorBinder != null) {
             return cursorBinder;

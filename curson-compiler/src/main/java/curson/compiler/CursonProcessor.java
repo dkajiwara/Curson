@@ -1,8 +1,6 @@
 package curson.compiler;
 
 import com.google.auto.common.SuperficialValidation;
-import com.squareup.javapoet.ArrayTypeName;
-import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 
 import java.io.IOException;
@@ -20,6 +18,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
+import javax.tools.Diagnostic;
 
 import curson.CursorRow;
 
@@ -50,11 +49,11 @@ public class CursonProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment env) {
-        Map<TypeElement, BindingClass> targetClassMap = findAndParseTargets(env);
-        for(Map.Entry<TypeElement, BindingClass> entry: targetClassMap.entrySet()) {
-            BindingClass bindingClass = entry.getValue();
+        Map<TypeElement, CursonEntityClassGenerator> targetClassMap = findAndParseTargets(env);
+        for(Map.Entry<TypeElement, CursonEntityClassGenerator> entry: targetClassMap.entrySet()) {
+            CursonEntityClassGenerator cursonEntityClassGenerator = entry.getValue();
             try {
-                bindingClass.brewJava().writeTo(filer);
+                cursonEntityClassGenerator.brewJava().writeTo(filer);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -62,8 +61,8 @@ public class CursonProcessor extends AbstractProcessor {
         return true;
     }
 
-    private Map<TypeElement, BindingClass> findAndParseTargets(RoundEnvironment env) {
-        Map<TypeElement, BindingClass> targetClassMap = new LinkedHashMap<>();
+    private Map<TypeElement, CursonEntityClassGenerator> findAndParseTargets(RoundEnvironment env) {
+        Map<TypeElement, CursonEntityClassGenerator> targetClassMap = new LinkedHashMap<>();
         Set<String> erasedTargetNames = new LinkedHashSet<>();
 
         // Process each @CursorRow element.
@@ -76,50 +75,32 @@ public class CursonProcessor extends AbstractProcessor {
         return targetClassMap;
     }
 
-    private void parseBind(Element element, Map<TypeElement, BindingClass> targetClassMap, Set<String> erasedTargetNames) {
+    private void parseBind(Element element, Map<TypeElement, CursonEntityClassGenerator> targetClassMap, Set<String> erasedTargetNames) {
         TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
 
         String value = element.getAnnotation(CursorRow.class).value();
         String name = element.getSimpleName().toString();
-        BindingClass bindingClass = getOrCreateTargetClass(targetClassMap, enclosingElement);
+        CursonEntityClassGenerator classGenerator =
+                getOrCreateTargetClassGenerator(targetClassMap, enclosingElement);
 
-        FiledBinding binding;
         TypeName typeName = TypeName.get(element.asType());
-        FiledBinding.Type type = null;
+        CursorRowElement.Type type = CursorRowElement.Type.valueOf(typeName);
 
-        if (ArrayTypeName.of(byte.class).equals(typeName)) {
-            type = FiledBinding.Type.BLOB;
-        } else if (TypeName.DOUBLE.equals(typeName)) {
-            type = FiledBinding.Type.DOUBLE;
-        } else if (TypeName.INT.equals(typeName)) {
-            type = FiledBinding.Type.INT;
-        } else if (TypeName.FLOAT.equals(typeName)) {
-            type = FiledBinding.Type.FLOAT;
-        } else if (TypeName.LONG.equals(typeName)) {
-            type = FiledBinding.Type.LONG;
-        } else if (ClassName.get(String.class).equals(typeName)) {
-            type = FiledBinding.Type.STRING;
-        } else if (TypeName.SHORT.equals(typeName)) {
-            type = FiledBinding.Type.SHORT;
-        }
-        binding = new FiledBinding(name, value, type);
-
-        bindingClass.addFieldCollection(binding);
-
+        classGenerator.addTargetAnnotationField(new CursorRowElement(name, value, type));
         erasedTargetNames.add(enclosingElement.toString());
     }
 
-    private BindingClass getOrCreateTargetClass(Map<TypeElement, BindingClass> targetClassMap, TypeElement enclosingElement) {
-        BindingClass bindingClass = targetClassMap.get(enclosingElement);
-        if (bindingClass == null) {
+    private CursonEntityClassGenerator getOrCreateTargetClassGenerator(Map<TypeElement, CursonEntityClassGenerator> targetClassMap, TypeElement enclosingElement) {
+        CursonEntityClassGenerator cursonEntityClassGenerator = targetClassMap.get(enclosingElement);
+        if (cursonEntityClassGenerator == null) {
             String targetType = enclosingElement.getQualifiedName().toString();
             String classPackage = getPackageName(enclosingElement);
             String className = getClassName(enclosingElement, classPackage);
 
-            bindingClass = new BindingClass(classPackage, className, targetType);
-            targetClassMap.put(enclosingElement, bindingClass);
+            cursonEntityClassGenerator = new CursonEntityClassGenerator(classPackage, className, targetType);
+            targetClassMap.put(enclosingElement, cursonEntityClassGenerator);
         }
-        return bindingClass;
+        return cursonEntityClassGenerator;
     }
 
     private String getPackageName(TypeElement type) {
@@ -129,5 +110,9 @@ public class CursonProcessor extends AbstractProcessor {
     private static String getClassName(TypeElement type, String packageName) {
         int packageLen = packageName.length() + 1;
         return type.getQualifiedName().toString().substring(packageLen).replace('.', '$');
+    }
+
+    private void error(Element e, String msg, Object... args) {
+        messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
     }
 }

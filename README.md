@@ -9,7 +9,7 @@ Usage
 -----
  
 ```java
-# Crate entity class for cursor binding.
+# Create entity class for cursor binding.
 class Item {
     @CursorRow("_id")
     int id;
@@ -25,14 +25,14 @@ public Item getItem() {
             null,
             MemoColumns.MEMO_ID + " = ?",
             new String[]{dataSnapshot.getKey()}, null);
-    return Curson.bind(cursor, Item.class);
+    return Curson.fromCursor(cursor, Item.class);
 }
 
 public List<Item> getItems() {
     Cursor cursor = context.getContentResolver().query(
             ExContentProvider.Contract.MEMO_URI,
             null, null, null, null);
-    return Curson.bindAll(cursor, Item.class);
+    return Curson.fromCursor(cursor, Item.class);
 }
 ```
 
@@ -50,8 +50,8 @@ allprojects {
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
-    compile 'com.github.dkajiwara.Curson:curson:v0.0.5'
-    apt 'com.github.dkajiwara.Curson:curson-compiler:v0.0.5'
+    compile 'com.github.dkajiwara.Curson:curson:0.1.0'
+    apt 'com.github.dkajiwara.Curson:curson-compiler:0.1.0'
 }
 ```
 
