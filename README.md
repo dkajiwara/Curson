@@ -43,8 +43,8 @@ Installation
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
-    compile 'com.github.dkajiwara:curson:0.1.5'
-    apt 'com.github.dkajiwara:curson-compiler:0.1.5'
+    compile 'com.github.dkajiwara:curson:0.1.6'
+    apt 'com.github.dkajiwara:curson-compiler:0.1.6'
 }
 ```
 
