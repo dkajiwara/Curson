@@ -39,20 +39,12 @@ public List<Item> getItems() {
 
 Installation
 --------
-This library is distributed by [JitPack](https://jitpack.io/). Add dependencies your build.gradle
 ```
-allprojects {
-    repositories {
-        ...
-        maven { url "https://jitpack.io" }
-    }
-}
-
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
-    compile 'com.github.dkajiwara.Curson:curson:0.1.1'
-    apt 'com.github.dkajiwara.Curson:curson-compiler:0.1.1'
+    compile 'com.github.dkajiwara:curson:0.1.5'
+    apt 'com.github.dkajiwara:curson-compiler:0.1.5'
 }
 ```
 
