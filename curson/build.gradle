@@ -1,9 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'android-apt'
-apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.novoda.bintray-release'
-
-group = 'com.github.dkajiwara'
 
 def isCi = "true".equals(System.getenv("CI"))
 def preDexEnabled = "true".equals(System.getProperty("pre-dex", "true"))

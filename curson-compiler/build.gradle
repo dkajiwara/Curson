@@ -1,8 +1,5 @@
 apply plugin: 'java'
-apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.novoda.bintray-release'
-
-group = 'com.github.dkajiwara'
 
 sourceCompatibility = JavaVersion.VERSION_1_7
 
@@ -30,4 +27,3 @@ publish {
     website = 'https://github.com/dkajiwara/Curson'
     licences = ['MIT']
 }
-
