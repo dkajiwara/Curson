@@ -20,7 +20,7 @@ dependencies {
 
 publish {
     userOrg = 'dkajiwara'
-    groupId = 'com.github.dkajiwara'
+    groupId = 'jp.dkajiwara'
     artifactId = 'curson-compiler'
     publishVersion = rootProject.ext.publishVersion
     desc = 'Cursor binding which uses annotation processing to generate boilerplate code for you.'
