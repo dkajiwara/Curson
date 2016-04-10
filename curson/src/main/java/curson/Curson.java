@@ -70,7 +70,7 @@ public class Curson {
         return fromCursorAll(cursor, entity, false);
     }
 
-    private static <T> List<T> fromCursorAll(Cursor cursor, Class<T> entity, boolean autoClose) {
+    public static <T> List<T> fromCursorAll(Cursor cursor, Class<T> entity, boolean autoClose) {
         if (cursor == null || !cursor.moveToPosition(0)) {
             throw new IllegalArgumentException("cursor is null.");
         }
