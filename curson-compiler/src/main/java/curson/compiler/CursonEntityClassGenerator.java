@@ -107,7 +107,7 @@ public class CursonEntityClassGenerator {
     private void appendSetFieldCursorValue(StringBuilder code, String entityFieldName) {
         for (CursorRowElement cursonRow : targetFieldSet) {
             code.append(entityFieldName + "." + cursonRow.getFieldName() +
-                    " = cursor." + cursonRow.getCursorValueMethod() + "(" + transFormFieldName(cursonRow) + ");\n");
+                    " = cursor." + cursonRow.toGetCursorValueMethod() + "(" + transFormFieldName(cursonRow) + ");\n");
         }
         code.append("\n");
     }

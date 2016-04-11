@@ -1,2 +1,3 @@
-include ':sample', ':curson-compiler', ':curson'
-rootProject.name = ':curson-parent'
+include ':curson'
+include ':curson-compiler'
+include ':sample'

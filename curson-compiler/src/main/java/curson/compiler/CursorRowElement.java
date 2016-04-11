@@ -23,7 +23,7 @@ public class CursorRowElement {
         return annotationValue;
     }
 
-    public String getCursorValueMethod() {
+    public String toGetCursorValueMethod() {
         switch (kind) {
             case INT:
                 return "getInt";
@@ -43,7 +43,7 @@ public class CursorRowElement {
         throw new IllegalArgumentException();
     }
 
-    public enum  Type {
+    public enum Type {
         INT,
         BLOB,
         LONG,

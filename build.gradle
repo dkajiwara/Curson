@@ -1,11 +1,20 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+final ANDROID_SDK_PATH = {
+    final localProperties = new Properties()
+    localProperties.load(new FileInputStream("${project.rootProject.projectDir}/local.properties"))
+    def androidSdkPath = localProperties['sdk.dir'] ?: System.getenv('ANDROID_HOME')
+    if (!androidSdkPath) {
+        throw new RuntimeException("Missing local.properties")
+    }
+    androidSdkPath
+}()
+final ANDROID_SUPPORT_REPOSITORY = "${ANDROID_SDK_PATH}/extras/android/m2repository"
 
 buildscript {
     repositories {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.5.0'
+        classpath 'com.android.tools.build:gradle:2.0.0'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath 'com.novoda:bintray-release:0.3.4'
         // NOTE: Do not place your application dependencies here; they belong
@@ -15,13 +24,17 @@ buildscript {
 
 allprojects {
     repositories {
+        maven {
+            url ANDROID_SUPPORT_REPOSITORY
+        }
         jcenter()
     }
 }
 
 ext {
-    versionFile = project.file("version.properties")
+    SUPPORT_LIBRARY_VERSION = '23.0.1'
 
+    versionFile = project.file("version.properties")
     versionName = {
         def versionProps = getVersionProps()
         "${versionProps['major']}.${versionProps['minor']}.${versionProps['patch']}"
