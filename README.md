@@ -10,7 +10,7 @@ Usage
 -----
  
 ```java
-# Create entity class for cursor binding.
+// Create entity class for cursor binding.
 class Item {
     @CursorRow("_id")
     int id;
@@ -26,14 +26,14 @@ public Item getItem() {
             null,
             MemoColumns.MEMO_ID + " = ?",
             new String[]{dataSnapshot.getKey()}, null);
-    return Curson.fromCursor(cursor, Item.class);
+    return Curson.fromCursor(cursor, Item.class, 0);
 }
 
 public List<Item> getItems() {
     Cursor cursor = context.getContentResolver().query(
             ExContentProvider.Contract.MEMO_URI,
             null, null, null, null);
-    return Curson.fromCursorAll(cursor, Item.class);
+    return Curson.fromCursor(cursor, Item.class);
 }
 ```
 
@@ -43,8 +43,8 @@ Installation
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
-    compile 'com.github.dkajiwara:curson:0.1.6'
-    apt 'com.github.dkajiwara:curson-compiler:0.1.6'
+    compile 'com.github.dkajiwara:curson:0.2.0'
+    apt 'com.github.dkajiwara:curson-compiler:0.2.0'
 }
 ```
 
