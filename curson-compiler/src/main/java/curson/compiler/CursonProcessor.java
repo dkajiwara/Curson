@@ -11,21 +11,18 @@ import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
-import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
-import javax.tools.Diagnostic;
 
 import curson.CursorRow;
 
 public class CursonProcessor extends AbstractProcessor {
     private Elements elementUtils;
     private Filer filer;
-    private Messager messager;
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
@@ -44,18 +41,18 @@ public class CursonProcessor extends AbstractProcessor {
         super.init(env);
         this.elementUtils = env.getElementUtils();
         this.filer = env.getFiler();
-        this.messager = env.getMessager();
     }
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment env) {
         Map<TypeElement, CursonEntityClassGenerator> targetClassMap = findAndParseTargets(env);
+
         for(Map.Entry<TypeElement, CursonEntityClassGenerator> entry: targetClassMap.entrySet()) {
             CursonEntityClassGenerator cursonEntityClassGenerator = entry.getValue();
             try {
                 cursonEntityClassGenerator.brewJava().writeTo(filer);
             } catch (IOException e) {
-                e.printStackTrace();
+                ProcessorUtils.error(processingEnv, entry.getKey(), "Unable to write cursor binder for type %s: %s", entry.getKey(), e.getMessage());
             }
         }
         return true;
@@ -78,6 +75,10 @@ public class CursonProcessor extends AbstractProcessor {
     private void parseBind(Element element, Map<TypeElement, CursonEntityClassGenerator> targetClassMap, Set<String> erasedTargetNames) {
         TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
 
+        if (ProcessorUtils.isInaccessibleViaGeneratedCode(processingEnv, CursorRow.class, "fields", element)) {
+            return;
+        }
+
         String value = element.getAnnotation(CursorRow.class).value();
         String name = element.getSimpleName().toString();
         CursonEntityClassGenerator classGenerator =
@@ -85,6 +86,10 @@ public class CursonProcessor extends AbstractProcessor {
 
         TypeName typeName = TypeName.get(element.asType());
         CursorRowElement.Type type = CursorRowElement.Type.valueOf(typeName);
+        if (type == null) {
+            ProcessorUtils.error(processingEnv, element, "@CursorRow %s is not supported.", typeName);
+            return;
+        }
 
         classGenerator.addTargetAnnotationField(new CursorRowElement(name, value, type));
         erasedTargetNames.add(enclosingElement.toString());
@@ -94,25 +99,12 @@ public class CursonProcessor extends AbstractProcessor {
         CursonEntityClassGenerator cursonEntityClassGenerator = targetClassMap.get(enclosingElement);
         if (cursonEntityClassGenerator == null) {
             String targetType = enclosingElement.getQualifiedName().toString();
-            String classPackage = getPackageName(enclosingElement);
-            String className = getClassName(enclosingElement, classPackage);
+            String classPackage = ProcessorUtils.getPackageName(elementUtils, enclosingElement);
+            String className = ProcessorUtils.getClassName(enclosingElement, classPackage);
 
             cursonEntityClassGenerator = new CursonEntityClassGenerator(classPackage, className, targetType);
             targetClassMap.put(enclosingElement, cursonEntityClassGenerator);
         }
         return cursonEntityClassGenerator;
-    }
-
-    private String getPackageName(TypeElement type) {
-        return elementUtils.getPackageOf(type).getQualifiedName().toString();
-    }
-
-    private static String getClassName(TypeElement type, String packageName) {
-        int packageLen = packageName.length() + 1;
-        return type.getQualifiedName().toString().substring(packageLen).replace('.', '$');
-    }
-
-    private void error(Element e, String msg, Object... args) {
-        messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
     }
 }

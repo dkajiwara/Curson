@@ -18,6 +18,8 @@ dependencies {
     compile 'com.squareup:javapoet:1.4.0'
     compile 'com.google.android:android:4.1.1.4'
     compile project(path: ':curson')
+    testCompile 'com.google.testing.compile:compile-testing:0.7'
+    testCompile files(org.gradle.internal.jvm.Jvm.current().getToolsJar())
 }
 
 publish {

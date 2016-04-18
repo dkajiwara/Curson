@@ -53,23 +53,22 @@ public class CursorRowElement {
         STRING;
 
         public static Type valueOf(TypeName typeName) {
-            Type type = null;
             if (ArrayTypeName.of(byte.class).equals(typeName)) {
-                type = CursorRowElement.Type.BLOB;
-            } else if (TypeName.DOUBLE.equals(typeName)) {
-                type = CursorRowElement.Type.DOUBLE;
-            } else if (TypeName.INT.equals(typeName)) {
-                type = CursorRowElement.Type.INT;
-            } else if (TypeName.FLOAT.equals(typeName)) {
-                type = CursorRowElement.Type.FLOAT;
-            } else if (TypeName.LONG.equals(typeName)) {
-                type = CursorRowElement.Type.LONG;
+                return CursorRowElement.Type.BLOB;
+            } else if (TypeName.DOUBLE.equals(typeName) || TypeName.DOUBLE.box().equals(typeName)) {
+                return CursorRowElement.Type.DOUBLE;
+            } else if (TypeName.INT.equals(typeName) || TypeName.INT.box().equals(typeName)) {
+                return CursorRowElement.Type.INT;
+            } else if (TypeName.FLOAT.equals(typeName) || TypeName.FLOAT.box().equals(typeName)) {
+                return CursorRowElement.Type.FLOAT;
+            } else if (TypeName.LONG.equals(typeName) || TypeName.LONG.box().equals(typeName)) {
+                return CursorRowElement.Type.LONG;
             } else if (ClassName.get(String.class).equals(typeName)) {
-                type = CursorRowElement.Type.STRING;
-            } else if (TypeName.SHORT.equals(typeName)) {
-                type = CursorRowElement.Type.SHORT;
+                return CursorRowElement.Type.STRING;
+            } else if (TypeName.SHORT.equals(typeName) || TypeName.SHORT.box().equals(typeName)) {
+                return CursorRowElement.Type.SHORT;
             }
-            return type;
+            return null;
         }
     }
 }
