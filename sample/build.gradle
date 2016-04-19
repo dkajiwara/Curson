@@ -25,6 +25,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile "com.android.support:appcompat-v7:${SUPPORT_LIBRARY_VERSION}"
 
-    compile 'jp.dkajiwara:curson:0.1.6'
-    apt 'jp.dkajiwara:curson-compiler:0.1.6'
+    compile 'jp.dkajiwara:curson:0.2.0'
+    apt 'jp.dkajiwara:curson-compiler:0.2.0'
 }
