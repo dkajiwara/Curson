@@ -19,6 +19,24 @@ public class Curson {
     private static final String ENTITY_BINDER_PREFIX = "$$CursonEntityBinder";
     static final Map<Class<?>, CursorBinder<?>> BINDERS = new LinkedHashMap<>();
 
+    @Nullable
+    public static <T> Cursor toCursor(T obj, @NonNull Class<T> entity) {
+        CursorBinder<T> binder = findCursorForClass(entity);
+        if (binder == null) {
+            return null;
+        }
+        return binder.bind(obj);
+    }
+
+    @Nullable
+    public static <T> Cursor toCursor(List<T> obj, @NonNull Class<T> entity) {
+        CursorBinder<T> binder = findCursorForClass(entity);
+        if (binder == null) {
+            return null;
+        }
+        return binder.bind(obj);
+    }
+
     /**
      * Bind annotated fields in the specified {@link T}.<br>
      * And, cursor will be closed automatically.<br>

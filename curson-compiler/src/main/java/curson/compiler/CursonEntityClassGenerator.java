@@ -2,6 +2,7 @@ package curson.compiler;
 
 
 import android.database.Cursor;
+import android.database.MatrixCursor;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
@@ -39,6 +40,8 @@ public class CursonEntityClassGenerator {
     public JavaFile brewJava() {
         MethodSpec fromCursor = createFromCursorMethod();
         MethodSpec fromCursorAll = createFromCursorAllMethod();
+        MethodSpec toCursor = createToCursorMethod();
+        MethodSpec toCursorAll = createToCursorAllMethod();
 
         ParameterizedTypeName parameterizedTypeName = ParameterizedTypeName.get(
                 ClassName.get(CursorBinder.class), ClassName.get(classPackage, className));
@@ -48,10 +51,88 @@ public class CursonEntityClassGenerator {
                 .addSuperinterface(parameterizedTypeName)
                 .addMethod(fromCursor)
                 .addMethod(fromCursorAll)
+                .addMethod(toCursor)
+                .addMethod(toCursorAll)
                 .build();
 
         return JavaFile.builder(classPackage, typeSpec)
                 .addFileComment("Generated code from Curson. Do not modify!")
+                .build();
+    }
+
+    private MethodSpec createToCursorAllMethod() {
+        ParameterSpec firstParam =
+                ParameterSpec.builder(
+                        ParameterizedTypeName.get(
+                                ClassName.get(List.class),
+                                ClassName.get(classPackage, className)),
+                        "entities").build();
+
+        StringBuilder code = new StringBuilder();
+        code.append("String[] names = {");
+        for (CursorRowElement cursonRow : targetFieldSet) {
+            code.append("\"" + cursonRow.getAnnotationValue() + "\",");
+        }
+        if (targetFieldSet.size() > 0) {
+            code.deleteCharAt(code.length() - 1);
+        }
+        code.append("};\n");
+
+        code.append("$T cursor = new $T(names);\n");
+
+        code.append("for (" + className + " bind : entities) {\n");
+        code.append("Object[] values = {");
+        for (CursorRowElement cursorRowElement : targetFieldSet) {
+            code.append("bind." + cursorRowElement.getFieldName() + ",");
+        }
+        if (targetFieldSet.size() > 0) {
+            code.deleteCharAt(code.length() - 1);
+        }
+        code.append("};\n");
+
+        code.append("cursor.addRow(values);\n");
+        code.append("}\n");
+        code.append("return cursor;\n");
+
+        return MethodSpec.methodBuilder("bind")
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(firstParam)
+                .addAnnotation(Override.class)
+                .addCode(code.toString(), MatrixCursor.class, MatrixCursor.class)
+                .returns(Cursor.class)
+                .build();
+    }
+
+    private MethodSpec createToCursorMethod() {
+        ParameterSpec firstParam = ParameterSpec.builder(ClassName.get(classPackage, className), "bind").build();
+        StringBuilder code = new StringBuilder();
+        code.append("String[] names = {");
+        for (CursorRowElement cursonRow : targetFieldSet) {
+            code.append("\"" + cursonRow.getAnnotationValue() + "\",");
+        }
+        if (targetFieldSet.size() > 0) {
+            code.deleteCharAt(code.length() - 1);
+        }
+        code.append("};\n");
+
+        code.append("Object[] values = {");
+        for (CursorRowElement cursorRowElement : targetFieldSet) {
+            code.append("bind." + cursorRowElement.getFieldName() + ",");
+        }
+        if (targetFieldSet.size() > 0) {
+            code.deleteCharAt(code.length() - 1);
+        }
+        code.append("};\n");
+        code.append("$T cursor = new $T(names);\n");
+        code.append("cursor.addRow(values);\n");
+        code.append("return cursor;\n");
+
+        return MethodSpec.methodBuilder("bind")
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(firstParam)
+                .addAnnotation(Override.class)
+                .addCode(code.toString(), MatrixCursor.class, MatrixCursor.class)
+                .returns(Cursor.class)
                 .build();
     }
 
@@ -75,7 +156,7 @@ public class CursonEntityClassGenerator {
 
     private MethodSpec createFromCursorAllMethod() {
         ParameterSpec cursorParam = ParameterSpec.builder(Cursor.class, "cursor").build();
-        ParameterSpec EntityListParam =
+        ParameterSpec entityListParam =
                 ParameterSpec.builder(
                         ParameterizedTypeName.get(
                                 ClassName.get(List.class),
@@ -97,9 +178,9 @@ public class CursonEntityClassGenerator {
         return MethodSpec.methodBuilder("bind")
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(cursorParam)
-                .addParameter(EntityListParam)
+                .addParameter(entityListParam)
                 .addAnnotation(Override.class)
-                .addCode(code.toString(), EntityListParam, cursorParam, EntityListParam)
+                .addCode(code.toString(), entityListParam, cursorParam, entityListParam)
                 .returns(parameterizedTypeName)
                 .build();
     }
