@@ -35,6 +35,24 @@ public List<Item> getItems() {
             null, null, null, null);
     return Curson.fromCursor(cursor, Item.class);
 }
+
+public Cursor toCursor() {
+    Item item = new Item();
+    item.id = 1;
+    item.memo = "Hello Curson!!";
+    item.date = 1L;
+    return Curson.toCursor(item, Item.class);
+}
+
+public Cursor toCursor() {
+    List<Item> items = new ArrayList<>();
+    Item item = new Item();
+    item.id = 1;
+    item.memo = "Hello Curson!!";
+    item.date = 1L;
+    items.add(item);
+    return Curson.toCursor(items, Item.class);
+}
 ```
 
 Installation
@@ -43,8 +61,8 @@ Installation
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
-    compile 'com.github.dkajiwara:curson:0.2.0'
-    apt 'com.github.dkajiwara:curson-compiler:0.2.0'
+    compile 'com.github.dkajiwara:curson:0.3.0'
+    apt 'com.github.dkajiwara:curson-compiler:0.3.0'
 }
 ```
 
