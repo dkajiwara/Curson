@@ -21,12 +21,4 @@ public class MainActivity extends Activity{
             Log.d(TAG, "title : " + sample.title + " description " + sample.description);
         }
     }
-
-//    class Test {
-//        Test() {
-//            MatrixCursor matrixCursor = new MatrixCursor(new String[]{});
-//            matrixCursor.addRow(new Object[]{hoge.hoge, hoge.hoge});
-//            return matrixCursor;
-//        }
-//    }
 }

@@ -13,4 +13,14 @@ public class Sample {
     String title;
     @CursorRow(SampleColumns.IS_PRIVATE)
     int isPrivate;
+
+    Sample() {}
+
+    Sample(int id, long date, String description, String title, int isPrivate) {
+        this.id = id;
+        this.date = date;
+        this.description = description;
+        this.title = title;
+        this.isPrivate = isPrivate;
+    }
 }
