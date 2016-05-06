@@ -1,6 +1,7 @@
 Curson
 ======
-[![Circle CI](https://circleci.com/gh/dkajiwara/Curson.svg?style=svg)](https://circleci.com/gh/dkajiwara/Curson)
+[![Circle CI](https://circleci.com/gh/dkajiwara/Curson.svg?style=shield)](https://circleci.com/gh/dkajiwara/Curson)
+[![Current release](https://api.bintray.com/packages/dkajiwara/maven/curson/images/download.svg)](https://dl.bintray.com/dkajiwara/maven/jp/dkajiwara)
 
 Cursor binding which uses annotation processing to generate boilerplate code for you.  
 
