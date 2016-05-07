@@ -83,4 +83,46 @@ public class CursonTest {
                         "@CursorRow fields may not be contained in private classes. (test.TestEntity.Inner.one)")
                 .in(source).onLine(4);
     }
+
+    @Test
+    public void failsIfNotDefaultContractor() {
+        JavaFileObject source = JavaFileObjects.forSourceString("test.TestEntity", Joiner.on('\n').join(
+                "package test;",
+                "import curson.CursorRow;",
+                "public class TestEntity {",
+                "  @CursorRow(\"row1\") String one;",
+                "  public TestEntity(String one) { ",
+                "    this.one = one;",
+                "  }",
+                "}"
+        ));
+
+        assertAbout(javaSource()).that(source)
+                .processedWith(new CursonProcessor())
+                .failsToCompile()
+                .withErrorContaining("TestEntity class is requeired the default constructor.")
+                .in(source).onLine(4);
+    }
+
+    @Test
+    public void failsIfNotDefaultContractor_inInnerClass() {
+        JavaFileObject source = JavaFileObjects.forSourceString("test.TestEntity", Joiner.on('\n').join(
+                "package test;",
+                "import curson.CursorRow;",
+                "public class TestEntity {",
+                "  public static class Inner {",
+                "    @CursorRow(\"row1\") String one;",
+                "    public Inner(String one) { ",
+                "      this.one = one;",
+                "    }",
+                "  }",
+                "}"
+        ));
+
+        assertAbout(javaSource()).that(source)
+                .processedWith(new CursonProcessor())
+                .failsToCompile()
+                .withErrorContaining("Inner class is requeired the default constructor.")
+                .in(source).onLine(5);
+    }
 }
