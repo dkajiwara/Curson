@@ -10,9 +10,6 @@ import javax.tools.JavaFileObject;
 import static com.google.common.truth.Truth.assertAbout;
 import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
 
-/**
- * @author dkajiwara
- */
 public class CursonDoubleTest {
     @Test
     public void doubleTest() throws Exception {

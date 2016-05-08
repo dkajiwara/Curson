@@ -10,9 +10,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Curson.
- */
 public class Curson {
     private static final String TAG = Curson.class.getSimpleName();
     private static final boolean DEBUG = false;
