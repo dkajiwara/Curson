@@ -15,3 +15,8 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+-keep public class * implements curson.CursorBinder { *; }
+
+-keep class * {
+    @curson.CursorRow <fields>;
+}
