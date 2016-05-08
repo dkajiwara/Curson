@@ -15,10 +15,10 @@ sourceSets {
 dependencies {
     compileOnly "com.android.support:support-annotations:${SUPPORT_LIBRARY_VERSION}"
     compile 'com.google.auto.service:auto-service:1.0-rc2'
-    compile 'com.squareup:javapoet:1.4.0'
+    compile 'com.squareup:javapoet:1.7.0'
     compile 'com.google.android:android:4.1.1.4'
     compile project(path: ':curson')
-    testCompile 'com.google.testing.compile:compile-testing:0.7'
+    testCompile 'com.google.testing.compile:compile-testing:0.9'
     testCompile files(org.gradle.internal.jvm.Jvm.current().getToolsJar())
 }
 
@@ -26,7 +26,7 @@ publish {
     userOrg = 'dkajiwara'
     groupId = 'jp.dkajiwara'
     artifactId = 'curson-compiler'
-    publishVersion = rootProject.ext.publishVersion
+    publishVersion = "{$PUBLISH_VERSION_NAME}"
     desc = 'Cursor binding which uses annotation processing to generate boilerplate code for you.'
     website = 'https://github.com/dkajiwara/Curson'
     licences = ['MIT']

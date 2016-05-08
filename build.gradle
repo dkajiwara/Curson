@@ -16,7 +16,7 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:2.1.0'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-        classpath 'com.novoda:bintray-release:0.3.4'
+        classpath 'com.novoda:bintray-release:0.3.5'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -40,7 +40,7 @@ ext {
         def versionProps = getVersionProps()
         "${versionProps['major']}.${versionProps['minor']}.${versionProps['patch']}"
     }
-    publishVersion = versionName()
+    PUBLISH_VERSION_NAME = versionName()
 }
 
 def Properties getVersionProps() {
