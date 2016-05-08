@@ -9,12 +9,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class CursonTest {
@@ -23,37 +17,28 @@ public class CursonTest {
         Curson.BINDERS.clear();
     }
 
-    @Test
-    public void zeroBindingsBindDoesNotThrowException() {
+    @Test(expected = IllegalArgumentException.class)
+    public void zeroBindingsBindThrowException() {
         //setup
         Cursor mockCursor = MockCursor.newInstance();
         //done
-        EmptyEntity actual = Curson.fromCursor(mockCursor, EmptyEntity.class, 0);
-        //verify
-        assertThat(actual, nullValue());
-        assertThat(mockCursor.isClosed(), is(true));
+        Curson.fromCursor(mockCursor, EmptyEntity.class, 0);
     }
 
-    @Test
-    public void zeroBindingsBindDoesNotThrowException_autoCursorCloseFalse() {
+    @Test(expected = IllegalArgumentException.class)
+    public void zeroBindingsBindThrowException_autoCursorCloseFalse() {
         //setup
         Cursor mockCursor = MockCursor.newInstance();
         //done
-        EmptyEntity actual = Curson.fromCursor(mockCursor, EmptyEntity.class, 0, false);
-        //verify
-        assertThat(actual, nullValue());
-        assertThat(mockCursor.isClosed(), is(false));
+        Curson.fromCursor(mockCursor, EmptyEntity.class, 0, false);
     }
 
-    @Test
-    public void zeroBindingsBindDoesNotThrowException_autoCursorClose() {
+    @Test(expected = IllegalArgumentException.class)
+    public void zeroBindingsBindThrowException_autoCursorClose() {
         //setup
         Cursor mockCursor = new MockCursor();
         //done
-        List<EmptyEntity> actual = Curson.fromCursor(mockCursor, EmptyEntity.class);
-        //verify
-        assertThat(actual.size(), is(0));
-        assertThat(mockCursor.isClosed(), is(true));
+        Curson.fromCursor(mockCursor, EmptyEntity.class);
     }
 
     public static class EmptyEntity {}

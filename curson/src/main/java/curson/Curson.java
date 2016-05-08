@@ -16,20 +16,20 @@ public class Curson {
     private static final String ENTITY_BINDER_PREFIX = "$$CursonEntityBinder";
     static final Map<Class<?>, CursorBinder<?>> BINDERS = new LinkedHashMap<>();
 
-    @Nullable
+    @NonNull
     public static <T> Cursor toCursor(T obj, @NonNull Class<T> entity) {
         CursorBinder<T> binder = findCursorForClass(entity);
         if (binder == null) {
-            return null;
+            throw new IllegalArgumentException("Can not find " + entity.getName() + ENTITY_BINDER_PREFIX + " class.");
         }
         return binder.bind(obj);
     }
 
-    @Nullable
+    @NonNull
     public static <T> Cursor toCursor(List<T> obj, @NonNull Class<T> entity) {
         CursorBinder<T> binder = findCursorForClass(entity);
         if (binder == null) {
-            return null;
+            throw new IllegalArgumentException("Can not find " + entity.getName() + ENTITY_BINDER_PREFIX + " class.");
         }
         return binder.bind(obj);
     }
@@ -70,7 +70,7 @@ public class Curson {
 
             CursorBinder<T> binder = findCursorForClass(entity);
             if (binder == null) {
-                return null;
+                throw new IllegalArgumentException("Can not find " + entity.getName() + ENTITY_BINDER_PREFIX + " class.");
             }
             return binder.bind(cursor);
         } finally {
@@ -105,12 +105,12 @@ public class Curson {
     @NonNull
     public static <T> List<T> fromCursor(@NonNull Cursor cursor, @NonNull Class<T> entity, boolean autoClose) {
         try {
-            if (!cursor.moveToPosition(0)) {
-                if (DEBUG) Log.d(TAG, "Can't move the cursor to an absolute position(0)");
-                return new ArrayList<>(0);
-            }
             CursorBinder<T> binder = findCursorForClass(entity);
             if (binder == null) {
+                throw new IllegalArgumentException("Can not find " + entity.getName() + ENTITY_BINDER_PREFIX + " class.");
+            }
+            if (!cursor.moveToPosition(0)) {
+                if (DEBUG) Log.d(TAG, "Can't move the cursor to an absolute position(0)");
                 return new ArrayList<>(0);
             }
             List<T> list = new ArrayList<>();
