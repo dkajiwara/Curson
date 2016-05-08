@@ -73,12 +73,15 @@ public class CursonProcessor extends AbstractProcessor {
     }
 
     private void parseBind(Element element, Map<TypeElement, CursonEntityClassGenerator> targetClassMap, Set<String> erasedTargetNames) {
-        TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
-
         if (ProcessorUtils.isInaccessibleViaGeneratedCode(processingEnv, CursorRow.class, "fields", element)) {
             return;
         }
 
+        if (!ProcessorUtils.isDefaultConstractorViaGeneratedCode(processingEnv, element)) {
+            return;
+        }
+
+        TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
         String value = element.getAnnotation(CursorRow.class).value();
         String name = element.getSimpleName().toString();
         CursonEntityClassGenerator classGenerator =

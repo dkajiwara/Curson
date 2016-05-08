@@ -1,12 +1,16 @@
 package curson.compiler;
 
 import java.lang.annotation.Annotation;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
 
@@ -47,6 +51,22 @@ public class ProcessorUtils {
         }
 
         return hasError;
+    }
+
+    static boolean isDefaultConstractorViaGeneratedCode(ProcessingEnvironment processingEnv, Element element) {
+        Element enclosingElement = element.getEnclosingElement();
+        List<? extends Element> enclosedElements = enclosingElement.getEnclosedElements();
+        for (Element elem: enclosedElements) {
+            if (elem.getKind() == ElementKind.CONSTRUCTOR) {
+                ExecutableElement executableElement = (ExecutableElement) elem;
+                List<? extends VariableElement> params = executableElement.getParameters();
+                if (params.size() == 0) {
+                    return true;
+                }
+            }
+        }
+        error(processingEnv, element, "%s class is requeired the default constructor.", enclosingElement.getSimpleName());
+        return false;
     }
 
     static void error(ProcessingEnvironment processingEnv, Element element, String message, Object... args) {
