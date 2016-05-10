@@ -17,7 +17,7 @@ public class Curson {
     static final Map<Class<?>, CursorBinder<?>> BINDERS = new LinkedHashMap<>();
 
     @NonNull
-    public static <T> Cursor toCursor(T obj, @NonNull Class<T> entity) {
+    public static <T> Cursor toCursor(@NonNull T obj, @NonNull Class<T> entity) {
         CursorBinder<T> binder = findCursorForClass(entity);
         if (binder == null) {
             throw new IllegalArgumentException("Can not find " + entity.getName() + ENTITY_BINDER_PREFIX + " class.");
@@ -26,7 +26,7 @@ public class Curson {
     }
 
     @NonNull
-    public static <T> Cursor toCursor(List<T> obj, @NonNull Class<T> entity) {
+    public static <T> Cursor toCursor(@NonNull List<T> obj, @NonNull Class<T> entity) {
         CursorBinder<T> binder = findCursorForClass(entity);
         if (binder == null) {
             throw new IllegalArgumentException("Can not find " + entity.getName() + ENTITY_BINDER_PREFIX + " class.");
@@ -62,15 +62,15 @@ public class Curson {
      */
     @Nullable
     public static <T> T fromCursor(@NonNull Cursor cursor, @NonNull Class<T> entity, int position, boolean autoClose) {
+        CursorBinder<T> binder = findCursorForClass(entity);
+        if (binder == null) {
+            throw new IllegalArgumentException("Can not find " + entity.getName() + ENTITY_BINDER_PREFIX + " class.");
+        }
+
         try {
             if (!cursor.moveToPosition(position)) {
                 if (DEBUG) Log.d(TAG, "Can't move the cursor to an absolute position(" + position+ ")");
                 return null;
-            }
-
-            CursorBinder<T> binder = findCursorForClass(entity);
-            if (binder == null) {
-                throw new IllegalArgumentException("Can not find " + entity.getName() + ENTITY_BINDER_PREFIX + " class.");
             }
             return binder.bind(cursor);
         } finally {
@@ -82,7 +82,7 @@ public class Curson {
 
     /**
      * Bind annotated field in the specified {@link T}.<br>
-     * And, cursor will be not closed automatically.<br>
+     * And, cursor will be closed automatically.<br>
      * if you need not automatically closed cursor, use {@link Curson#fromCursor(Cursor, Class, boolean)} method.
      *
      * @param cursor target
@@ -104,17 +104,17 @@ public class Curson {
      */
     @NonNull
     public static <T> List<T> fromCursor(@NonNull Cursor cursor, @NonNull Class<T> entity, boolean autoClose) {
+        CursorBinder<T> binder = findCursorForClass(entity);
+        if (binder == null) {
+            throw new IllegalArgumentException("Can not find " + entity.getName() + ENTITY_BINDER_PREFIX + " class.");
+        }
+
         try {
-            CursorBinder<T> binder = findCursorForClass(entity);
-            if (binder == null) {
-                throw new IllegalArgumentException("Can not find " + entity.getName() + ENTITY_BINDER_PREFIX + " class.");
-            }
             if (!cursor.moveToPosition(0)) {
                 if (DEBUG) Log.d(TAG, "Can't move the cursor to an absolute position(0)");
                 return new ArrayList<>(0);
             }
-            List<T> list = new ArrayList<>();
-            return binder.bind(cursor, list);
+            return binder.bind(cursor, new ArrayList<T>());
         } finally {
             if (autoClose) {
                 cursor.close();
