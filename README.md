@@ -12,7 +12,7 @@ You have to create a entity class like below.
 
 ```java
 class Item {
-    @CursorRow("_id")
+    @CursorRow("_id"/*CURSOR_COLUMN_NAME*/)
     int id;
     @CursorRow("MEMO")
     String memo;
