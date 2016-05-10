@@ -26,7 +26,7 @@ publish {
     userOrg = 'dkajiwara'
     groupId = 'jp.dkajiwara'
     artifactId = 'curson-compiler'
-    publishVersion = "{$PUBLISH_VERSION_NAME}"
+    publishVersion = "${PUBLISH_VERSION_NAME}"
     desc = 'Cursor binding which uses annotation processing to generate boilerplate code for you.'
     website = 'https://github.com/dkajiwara/Curson'
     licences = ['MIT']
