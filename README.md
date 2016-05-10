@@ -1,5 +1,4 @@
-Curson
-======
+# Curson
 [![Circle CI](https://circleci.com/gh/dkajiwara/Curson.svg?style=shield)](https://circleci.com/gh/dkajiwara/Curson)
 [![Current release](https://api.bintray.com/packages/dkajiwara/maven/curson/images/download.svg)](https://dl.bintray.com/dkajiwara/maven/jp/dkajiwara)
 
@@ -7,11 +6,11 @@ Cursor binding which uses annotation processing to generate boilerplate code for
 
  * Eliminate `getColumnIndex` calls by using `@CursorRow` on fields.
 
-Usage
------
- 
+## How to use
+### Create Entity class
+You have to create a entity class like below.
+
 ```java
-// Create entity class for cursor binding.
 class Item {
     @CursorRow("_id")
     int id;
@@ -20,7 +19,18 @@ class Item {
     @CursorRow("DATE")
     long date;
 }
+```
+CursorRow annotations supports
+* byte[]
+* int / Integer
+* double / Double
+* float / Float
+* short / Short
+* String
 
+### Convert to entity/cursor
+####  To Entity
+```java
 public Item getItem() {
     Cursor cursor = context.getContentResolver().query(
             ExContentProvider.Contract.MEMO_URI,
@@ -36,7 +46,9 @@ public List<Item> getItems() {
             null, null, null, null);
     return Curson.fromCursor(cursor, Item.class);
 }
-
+```
+#### To Cursor
+```java
 public Cursor toCursor() {
     Item item = new Item();
     item.id = 1;
@@ -62,8 +74,8 @@ Installation
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
-    compile 'com.github.dkajiwara:curson:0.4.0'
-    apt 'com.github.dkajiwara:curson-compiler:0.4.0'
+    compile 'com.github.dkajiwara:curson:1.0.0'
+    apt 'com.github.dkajiwara:curson-compiler:1.0.0'
 }
 ```
 
